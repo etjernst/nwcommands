@@ -6,24 +6,24 @@
 capture program drop nwsave
 program nwsave
 	syntax anything [, old * format(string)]
-	local webname = subinstr("`anything'", ".dta","",.)
+	local webname = subinstr(`anything', ".dta","",.)
 
 	_nwsyntax _all, max(99999)
 	local nets : word count `netname'
 
-	
+
 	if "`format'" == "" {
 		local format = "edgelist"
 	}
 	if (`=`nodes_all' + 20' > c(max_k_theory)){
-		local format = "edgelist" 
+		local format = "edgelist"
 	}
-	
+
 	_opts_oneof "matrix edgelist" "format" "`format'" 6556
-		
-	preserve	
+
+	preserve
 	 qui {
-	
+
 	local nodes = 0
 	local i = 1
 
@@ -42,7 +42,7 @@ program nwsave
 		}
 	}
 	save`old' `attributes', replace
-	
+
 	if "`format'" == "edgelist" {
 		clear
 		gen _fromid = .
@@ -84,8 +84,8 @@ program nwsave
 		}
 	}
 
-	gen _format = "" 
-	gen _nets = . 
+	gen _format = ""
+	gen _nets = .
 	gen _name = ""
 	gen _size = .
 	gen _directed = ""
@@ -108,7 +108,7 @@ program nwsave
 		rename _nodevar _newvar`i'
 		local i = `i' + 1
 	}
-	
+
 	local i = 1
 	foreach onenet in `netname' {
 		rename _newlabel`i' _nodelab`i'
@@ -118,24 +118,24 @@ program nwsave
 		replace _nodevar`i' = "_net`i'_" + _runningnumber
 		drop _runningnumber
 		local i = `i' + 1
-	}	
-	
+	}
+
 	if "`format'" == "matrix" {
 		replace _format = "matrix" in 1
-		
+
 	}
-	
+
 	if "`format'" == "edgelist" {
 		replace _format = "edgelist" in 1
-		
+
 	}
-	
+
 	replace _nets = `nets' in 1
 	order _format _nets _name _size _directed _edgelabs _nodevar* _nodelab*
 	gen _running = _n
 	qui merge m:m _running using `attributes', nogenerate
 	drop _running
-	
+
 	}
 	save`old' `webname'.dta, `options'
 	restore
@@ -143,7 +143,7 @@ end
 
 
 
-	
+
 
 *! v1.5.0 __ 17 Sep 2015 __ 13:09:53
 *! v1.5.1 __ 17 Sep 2015 __ 14:54:23
